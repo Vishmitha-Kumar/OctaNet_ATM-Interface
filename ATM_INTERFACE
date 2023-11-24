@@ -1,0 +1,164 @@
+
+import java.util.*;
+
+class ATM {
+    private String id="INSXXXXXXXXXXXXX";
+    private int pin = 4321;
+    private int balance = 1000000000;
+    private final int maximumTransactionLimit = 50000;
+    private List<String> transactionHistoryLog = new ArrayList<>();
+    private Scanner scanner = new Scanner(System.in);
+  
+    private int  curBalance(int currentBalance)
+    {
+        System.out.println("Balance: Rs:"+currentBalance+"-/-");
+        return currentBalance;
+    }
+    private void transactionHistory() {
+        System.out.println("Transaction history:");
+        if (transactionHistoryLog.isEmpty()) {
+            System.out.println("No transactions found.");
+        } else {
+            for (String transaction : transactionHistoryLog) {
+                System.out.println(transaction);
+            }
+        }
+    }
+
+    private int withdraw(int currentBalance) {
+        System.out.print("Enter withdrawal amount: ");
+        int wamount = scanner.nextInt();
+        if (wamount <= 0) {
+            System.out.println("Invalid withdrawal amount");
+            return currentBalance;
+        }
+        if (currentBalance < wamount) {
+            System.out.println("Insufficient balance to withdraw the cash");
+            return currentBalance;
+        } else {
+            System.out.println("Amount Rs:" + wamount + "/- withdrawn successfully");
+            int newBalance = currentBalance - wamount;
+            System.out.println("Current Balance: Rs." + newBalance + "/-");
+            transactionHistoryLog.add("Withdrawal, Amount: Rs " + wamount + ", Current Balance: Rs " + newBalance);
+            return newBalance;
+        }
+    }
+
+    private int deposit(int currentBalance) {
+        System.out.print("Enter deposit amount: ");
+        int damount = scanner.nextInt();
+        if (damount <= 0) {
+            System.out.println("Invalid deposit amount");
+            return currentBalance;
+        }
+        int newBalance = currentBalance + damount;
+        System.out.println("Rs: " + damount + " deposited successfully.");
+        System.out.println("Current balance: Rs " + newBalance + "/-");
+        transactionHistoryLog.add("Deposit, Amount: Rs " + damount + ", Current Balance: Rs " + newBalance);
+        return newBalance;
+    }
+
+private int transfer(int currentBalance) {
+    int attempts = 0;
+    String account;
+
+    do {
+        System.out.print("Enter the recipient's account number: ");
+        account = scanner.next();
+
+        if (account.length() != 16) {
+            System.out.println("Invalid account number. Your account should contain only 16 characters.");
+            attempts++;
+        } else {
+            attempts = 0;
+
+            System.out.print("Enter the amount to be transferred: ");
+            int tamount = scanner.nextInt();
+
+            if (tamount <= 0) {
+                System.out.println("Invalid transfer amount");
+                return currentBalance;
+            }
+
+            if (tamount < maximumTransactionLimit && tamount <= currentBalance) {
+                System.out.println("Amount Rs: " + tamount + "/- transferred successfully");
+                int newBalance = currentBalance - tamount;
+                System.out.println("Current Balance: Rs." + newBalance + "/-");
+                transactionHistoryLog.add("Transfer, Amount: Rs " + tamount + ", Current Balance: Rs " + newBalance);
+                return newBalance;
+            } else {
+                System.out.println("Invalid transfer amount or insufficient balance");
+                return currentBalance;
+            }
+        }
+    } while (attempts <= 3);
+
+    System.out.println("Transaction aborted.");
+    return currentBalance;
+}
+
+    public static void main(String[] args) {
+        ATM atm = new ATM();
+        System.out.println("-----------------------WELCOME----------------------------");
+        System.out.print("Enter your id : ");
+        
+        String eid= atm.scanner.next();
+        if(!eid.equals(atm.id))
+        {
+            System.out.print("Enter valid id");
+        }
+        else
+        {
+        int digits = 4;
+        int epin;
+        System.out.print("Enter your pin : ");
+        do {
+            epin = atm.scanner.nextInt();
+            int digitCount = (int) Math.log10(Math.abs(epin)) + 1;
+            if (digitCount != digits) {
+                System.out.println("Invalid input. Please enter an integer with " + digits + " digits.");
+            }
+        } while ((int) Math.log10(Math.abs(epin)) + 1 != digits);
+        System.out.println("-----------------------------------------");
+        int c=0;
+        if (epin != atm.pin) {
+            System.out.print("Invalid pin. Transaction aborted");
+           
+        } else {
+            while (true) {
+                System.out.println("-----------------------------------------");
+                System.out.println("Select options:");
+                System.out.println("1.Transactions History");
+                System.out.println("2.Withdraw");
+                System.out.println("3.Deposit");
+                System.out.println("4.Transfer");
+                System.out.println("5.Balance");
+                System.out.println("6.Quit");
+                System.out.println("-----------------------------------------");
+                int option = atm.scanner.nextInt();
+                switch (option) {
+                    case 1:
+                        atm.transactionHistory();
+                        break;
+                    case 2:
+                        atm.balance = atm.withdraw(atm.balance);
+                        break;
+                    case 3:
+                        atm.balance = atm.deposit(atm.balance);
+                        break;
+                    case 4:
+                        atm.balance = atm.transfer(atm.balance);
+                        break;
+                    case 5:
+                        atm.balance = atm.curBalance(atm.balance);
+                        break;
+                    case 6:
+                        System.out.println("Exiting the program. Thank you!");
+                        System.exit(0);
+                }
+            }
+            }
+        }
+    }
+
+}
